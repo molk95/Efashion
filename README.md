@@ -6,16 +6,6 @@ Portail web qui centralise les dashboards **Power BI** (« Publier sur le web »
 
 ---
 
-## Équipe & Rôles
-
-| Membre | Catégorie métier | Rôle Portail |
-| **Molk SAOUABI** | Développement des collections | VIEWER |
-| **Abir EL WEHDI** | Merchandising produit | VIEWER |
-| **Manel ABAKHOUCH** | Gestion du catalogue e-commerce | VIEWER |
-| **Chayma SAMAALI** |  Qualité des fiches produits | VIEWER |
-
----
-
 ##  Docker
 
 ```bash
