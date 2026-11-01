@@ -1,23 +1,23 @@
 # eFashion BI — Portail décisionnel collaboratif
 
-Portail web qui centralise les dashboards **Power BI** (« Publier sur le web » et « Intégration sécurisée ReportEmbed ») des 4 décideurs métier du projet eFashion (ESPRIT).
+Portail web qui centralise les dashboards **Power BI** (« Publier sur le web » et « Intégration sécurisée ReportEmbed ») des 4 décideurs métier du projet eFashion .
 
 **Stack** : Angular 19 (standalone, signals) + Tailwind CSS · Node.js / Express / TypeScript · Prisma · PostgreSQL 16 · Docker Compose.
 
 ---
 
-## 👥 Équipe & Rôles
+## Équipe & Rôles
 
-| Membre | Email ESPRIT | Catégorie métier | Rôle Portail |
+| Membre | Catégorie métier | Rôle Portail |
 |---|---|---|---|
-| **Molk SAOUABI** | `molk.saouabi@esprit.tn` | Développement des collections | VIEWER |
-| **Abir EL WEHDI** | `Abir.ELWEHDI@esprit.tn` | Merchandising produit | VIEWER |
-| **Manel ABAKHOUCH** | `Manel.ABAKHOUCH@esprit.tn` | Gestion du catalogue e-commerce | VIEWER |
-| **Chayma SAMAALI** | `Chayma.SAMAALI@esprit.tn` | Qualité des fiches produits | VIEWER |
+| **Molk SAOUABI** | Développement des collections | VIEWER |
+| **Abir EL WEHDI** | Merchandising produit | VIEWER |
+| **Manel ABAKHOUCH** | Gestion du catalogue e-commerce | VIEWER |
+| **Chayma SAMAALI** |  Qualité des fiches produits | VIEWER |
 
 ---
 
-## 🚀 Démarrage rapide (Docker)
+##  Docker
 
 ```bash
 docker compose up --build -d
@@ -37,7 +37,7 @@ docker compose up --build -d
 
 ---
 
-## 🗄️ Visualiser la base avec Prisma Studio
+##  Visualiser la base avec Prisma Studio
 
 Le port `5432` de PostgreSQL est exposé sur l'hôte. Pour ouvrir l'interface visuelle Prisma Studio :
 
@@ -56,7 +56,7 @@ Prisma Studio s'ouvre automatiquement sur **[http://localhost:5555](http://local
 
 ---
 
-## 🔗 Mise à jour facile des liens Power BI
+##  Mise à jour facile des liens Power BI
 
 Depuis l'**Espace Admin** (`/admin`), vous pouvez à tout moment renseigner ou modifier le lien d'un membre (Abir, Manel, Chayma) :
 
@@ -71,7 +71,7 @@ Depuis l'**Espace Admin** (`/admin`), vous pouvez à tout moment renseigner ou m
 
 ---
 
-## 🛡️ Sécurité de l'intégration iframe
+## Sécurité de l'intégration iframe
 
 L'iframe des dashboards Power BI est sécurisé avec les attributs recommandés :
 - `allowFullScreen="true"`
@@ -81,7 +81,7 @@ L'iframe des dashboards Power BI est sécurisé avec les attributs recommandés 
 
 ---
 
-## 📡 Endpoints de l'API
+## Endpoints de l'API
 
 | Méthode | Route | Accès | Description |
 |---|---|---|---|
@@ -97,7 +97,7 @@ L'iframe des dashboards Power BI est sécurisé avec les attributs recommandés 
 
 ---
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 ├── docker-compose.yml          # Orchestration multi-conteneurs (db, server, client)
