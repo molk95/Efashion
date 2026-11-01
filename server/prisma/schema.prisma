@@ -27,6 +27,7 @@ model Dashboard {
   id           String   @id @default(uuid()) @db.Uuid
   title        String
   authorName   String
+  authorEmail  String?  @default("")
   description  String   @default("")
   embedUrl     String   @default("")
   category     String

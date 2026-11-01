@@ -18,6 +18,7 @@ CREATE TABLE "Dashboard" (
     "id" UUID NOT NULL,
     "title" TEXT NOT NULL,
     "authorName" TEXT NOT NULL,
+    "authorEmail" TEXT DEFAULT '',
     "description" TEXT NOT NULL DEFAULT '',
     "embedUrl" TEXT NOT NULL DEFAULT '',
     "category" TEXT NOT NULL,

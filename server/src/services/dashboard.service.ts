@@ -1,11 +1,13 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { HttpError } from '../utils/http-error';
 import { validateEmbed } from '../utils/powerbi';
+import { AuthPayload } from '../middlewares/auth';
 
 export type DashboardInput = {
   title: string;
   authorName: string;
+  authorEmail?: string;
   description?: string;
   embedUrl?: string;
   category: string;
@@ -22,16 +24,53 @@ function checkEmbed(embedUrl?: string) {
 }
 
 export const dashboardService = {
-  list(includeInactive: boolean) {
+  list(user?: AuthPayload, includeInactive?: boolean) {
+    if (!user || user.role === Role.ADMIN) {
+      return prisma.dashboard.findMany({
+        where: includeInactive ? {} : { isActive: true },
+        orderBy: [{ category: 'asc' }, { displayOrder: 'asc' }, { title: 'asc' }],
+      });
+    }
+
+    // Un utilisateur VIEWER ne voit strictement que son propre dashboard
+    const email = (user.email || '').toLowerCase();
+    const prefix = email.split('@')[0] || '';
+    const firstName = prefix.split('.')[0] || email;
+
     return prisma.dashboard.findMany({
-      where: includeInactive ? {} : { isActive: true },
+      where: {
+        isActive: true,
+        OR: [
+          { authorEmail: { equals: email, mode: 'insensitive' } },
+          { authorName: { contains: firstName, mode: 'insensitive' } },
+        ],
+      },
       orderBy: [{ category: 'asc' }, { displayOrder: 'asc' }, { title: 'asc' }],
     });
   },
 
-  async get(id: string, includeInactive: boolean) {
+  async get(id: string, user?: AuthPayload) {
     const d = await prisma.dashboard.findUnique({ where: { id } });
-    if (!d || (!d.isActive && !includeInactive)) throw new HttpError(404, 'Dashboard introuvable.');
+    if (!d) throw new HttpError(404, 'Dashboard introuvable.');
+
+    if (!user || user.role === Role.ADMIN) {
+      return d;
+    }
+
+    if (!d.isActive) throw new HttpError(404, 'Dashboard introuvable.');
+
+    const email = (user.email || '').toLowerCase();
+    const prefix = email.split('@')[0] || '';
+    const firstName = prefix.split('.')[0] || email;
+
+    const isOwner =
+      (d.authorEmail && d.authorEmail.toLowerCase() === email) ||
+      d.authorName.toLowerCase().includes(firstName.toLowerCase());
+
+    if (!isOwner) {
+      throw new HttpError(403, "Accès restreint : vous n'avez accès qu'à votre propre dashboard.");
+    }
+
     return d;
   },
 

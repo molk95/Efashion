@@ -18,6 +18,7 @@ const DASHBOARDS = [
     id: '00000000-0000-4000-8000-000000000001',
     title: 'Diversité des Produits du Catalogue',
     authorName: 'Molk',
+    authorEmail: 'molk.saouabi@esprit.tn',
     category: 'Développement des collections',
     description:
       'Analyse de la diversité des articles : répartition par couleur, apparence graphique, type de vêtement et équilibre des groupes de produits.',
@@ -30,6 +31,7 @@ const DASHBOARDS = [
     id: '00000000-0000-4000-8000-000000000002',
     title: 'Structure et Répartition du Catalogue',
     authorName: 'Abir',
+    authorEmail: 'abir.elwehdi@esprit.tn',
     category: 'Merchandising produit',
     description:
       "Volume total d'articles par département, répartition par section/index et identification des catégories dominantes.",
@@ -41,6 +43,7 @@ const DASHBOARDS = [
     id: '00000000-0000-4000-8000-000000000003',
     title: 'Volume et Organisation des Références',
     authorName: 'Manel',
+    authorEmail: 'manel.abakhouch@esprit.tn',
     category: 'Gestion du catalogue e-commerce',
     description:
       'Suivi du volume de références, classification des articles par type/département et cartographie des catégories e-commerce.',
@@ -52,6 +55,7 @@ const DASHBOARDS = [
     id: '00000000-0000-4000-8000-000000000004',
     title: 'Qualité des Fiches Produits',
     authorName: 'Chayma',
+    authorEmail: 'chayma.samaali@esprit.tn',
     category: 'Qualité des fiches produits',
     description:
       'Contrôle de la complétude : taux de descriptions renseignées, longueur moyenne des textes et identification des manques par rayon.',

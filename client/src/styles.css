@@ -6,39 +6,40 @@
   html, body { height: 100%; }
   body {
     background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(232, 97, 158, 0.12), transparent 60%),
-      radial-gradient(900px 500px at 110% 10%, rgba(238, 196, 106, 0.08), transparent 60%),
-      #07070d;
+      radial-gradient(1200px 600px at 5% -10%, rgba(232, 97, 158, 0.08), transparent 60%),
+      radial-gradient(900px 500px at 95% 10%, rgba(217, 166, 63, 0.06), transparent 60%),
+      #f8fafc;
+    color: #1e293b;
   }
-  ::selection { background: rgba(232, 97, 158, 0.35); }
-  * { scrollbar-width: thin; scrollbar-color: #2a2a3a transparent; }
+  ::selection { background: rgba(232, 97, 158, 0.2); color: #831843; }
+  * { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
 }
 
 @layer components {
   .glass {
-    @apply bg-white/[0.035] backdrop-blur-xl border border-white/[0.07] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)];
+    @apply bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)];
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/60;
   }
   .btn-primary {
-    @apply btn text-white bg-gradient-to-r from-brand-500 to-brand-600 hover:shadow-glow hover:-translate-y-0.5 active:translate-y-0;
+    @apply btn text-white bg-gradient-to-r from-brand-500 to-brand-600 shadow-sm hover:shadow-md hover:shadow-brand-500/25 hover:-translate-y-0.5 active:translate-y-0;
   }
   .btn-ghost {
-    @apply btn text-slate-300 bg-white/5 border border-white/10 hover:bg-white/10 hover:text-white;
+    @apply btn text-slate-700 bg-slate-100 border border-slate-200/80 hover:bg-slate-200/80 hover:text-slate-900;
   }
   .btn-danger {
-    @apply btn text-rose-200 bg-rose-500/10 border border-rose-400/20 hover:bg-rose-500/20;
+    @apply btn text-rose-700 bg-rose-50 border border-rose-200 hover:bg-rose-100;
   }
   .input {
-    @apply w-full rounded-xl bg-ink-900/80 border border-white/10 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none focus:border-brand-400/60 focus:ring-4 focus:ring-brand-500/10;
+    @apply w-full rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10;
   }
-  .label { @apply block text-xs font-medium uppercase tracking-wider text-slate-400 mb-1.5; }
+  .label { @apply block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5; }
   .chip { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold; }
-  .text-gradient { @apply bg-gradient-to-r from-brand-300 via-brand-400 to-gold-400 bg-clip-text text-transparent; }
-  .skeleton { @apply relative overflow-hidden bg-white/[0.04] rounded-xl; }
+  .text-gradient { @apply bg-gradient-to-r from-brand-600 via-brand-500 to-amber-600 bg-clip-text text-transparent; }
+  .skeleton { @apply relative overflow-hidden bg-slate-200/70 rounded-xl; }
   .skeleton::after {
     content: '';
-    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/[0.06] to-transparent;
+    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent;
   }
 }
