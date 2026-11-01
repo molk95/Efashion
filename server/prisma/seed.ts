@@ -4,9 +4,15 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 /**
- * IDs fixes => upsert idempotent : le seed peut être rejoué à chaque démarrage du conteneur
- * sans créer de doublons. `update: {}` préserve les modifications faites ensuite via l'Espace Admin.
+ * 4 décideurs métier du projet eFashion (ESPRIT)
  */
+const TEAM_MEMBERS = [
+  { email: 'molk.saouabi@esprit.tn', fullName: 'Molk SAOUABI', role: Role.ADMIN },
+  { email: 'Abir.ELWEHDI@esprit.tn', fullName: 'Abir EL WEHDI', role: Role.VIEWER },
+  { email: 'Manel.ABAKHOUCH@esprit.tn', fullName: 'Manel ABAKHOUCH', role: Role.VIEWER },
+  { email: 'Chayma.SAMAALI@esprit.tn', fullName: 'Chayma SAMAALI', role: Role.VIEWER },
+];
+
 const DASHBOARDS = [
   {
     id: '00000000-0000-4000-8000-000000000001',
@@ -34,11 +40,11 @@ const DASHBOARDS = [
   {
     id: '00000000-0000-4000-8000-000000000003',
     title: 'Volume et Organisation des Références',
-    authorName: 'M Anel',
+    authorName: 'Manel',
     category: 'Gestion du catalogue e-commerce',
     description:
       'Suivi du volume de références, classification des articles par type/département et cartographie des catégories e-commerce.',
-    embedUrl: 'https://app.powerbi.com/reportEmbed?placeholder=anel',
+    embedUrl: 'https://app.powerbi.com/reportEmbed?placeholder=manel',
     displayOrder: 3,
     isActive: true,
   },
@@ -56,31 +62,71 @@ const DASHBOARDS = [
 ];
 
 async function main() {
-  const email = (process.env.ADMIN_EMAIL || 'admin@efashion.local').toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || 'Admin123!';
+  const adminEmail = (process.env.ADMIN_EMAIL || 'admin@efashion.local').toLowerCase();
+  const defaultPassword = process.env.ADMIN_PASSWORD || 'Admin123!';
+  const defaultHash = await bcrypt.hash(defaultPassword, 10);
 
+  // Compte admin principal
   await prisma.user.upsert({
-    where: { email },
+    where: { email: adminEmail },
     update: {},
     create: {
-      email,
+      email: adminEmail,
       fullName: 'Administrateur eFashion',
       role: Role.ADMIN,
-      passwordHash: await bcrypt.hash(password, 10),
+      passwordHash: defaultHash,
     },
   });
 
-  // Supprime les anciens enregistrements de test éventuels
+  // Comptes des membres de l'équipe (avec leurs adresses ESPRIT)
+  for (const m of TEAM_MEMBERS) {
+    await prisma.user.upsert({
+      where: { email: m.email.toLowerCase() },
+      update: { fullName: m.fullName, role: m.role },
+      create: {
+        email: m.email.toLowerCase(),
+        fullName: m.fullName,
+        role: m.role,
+        passwordHash: defaultHash,
+      },
+    });
+  }
+
+  // Nettoyage des anciennes fiches de test
   await prisma.dashboard.deleteMany({
     where: {
       id: { notIn: DASHBOARDS.map((d) => d.id) },
     },
   });
 
+  // Insertion ou mise à jour respectant les URLs personnalisées définies dans l'admin
   for (const d of DASHBOARDS) {
-    await prisma.dashboard.upsert({ where: { id: d.id }, update: d, create: d });
+    const existing = await prisma.dashboard.findUnique({ where: { id: d.id } });
+    if (existing) {
+      await prisma.dashboard.update({
+        where: { id: d.id },
+        data: {
+          title: d.title,
+          authorName: d.authorName,
+          category: d.category,
+          description: d.description,
+          displayOrder: d.displayOrder,
+          isActive: d.isActive,
+          embedUrl:
+            existing.embedUrl && !existing.embedUrl.includes('placeholder=')
+              ? existing.embedUrl
+              : d.embedUrl,
+        },
+      });
+    } else {
+      await prisma.dashboard.create({ data: d });
+    }
   }
-  console.log(`Seed terminé. Admin : ${email} · ${DASHBOARDS.length} dashboards`);
+
+  console.log(`Seed terminé avec succès :`);
+  console.log(`- Admin principal : ${adminEmail}`);
+  console.log(`- Membres ESPRIT : ${TEAM_MEMBERS.map((t) => t.email).join(', ')}`);
+  console.log(`- 4 dashboards créés/mis à jour (Molk, Abir, Manel, Chayma)`);
 }
 
 main()

@@ -1,70 +1,117 @@
 # eFashion BI — Portail décisionnel collaboratif
 
-Portail web qui centralise les dashboards **Power BI** (« Publier sur le web ») de chaque membre de l'équipe du projet décisionnel eFashion.
+Portail web qui centralise les dashboards **Power BI** (« Publier sur le web » et « Intégration sécurisée ReportEmbed ») des 4 décideurs métier du projet eFashion (ESPRIT).
 
 **Stack** : Angular 19 (standalone, signals) + Tailwind CSS · Node.js / Express / TypeScript · Prisma · PostgreSQL 16 · Docker Compose.
 
-## 🚀 Démarrage (une seule commande)
+---
+
+## 👥 Équipe & Rôles
+
+| Membre | Email ESPRIT | Catégorie métier | Rôle Portail |
+|---|---|---|---|
+| **Molk SAOUABI** | `molk.saouabi@esprit.tn` | Développement des collections | ADMIN |
+| **Abir EL WEHDI** | `Abir.ELWEHDI@esprit.tn` | Merchandising produit | VIEWER |
+| **Manel ABAKHOUCH** | `Manel.ABAKHOUCH@esprit.tn` | Gestion du catalogue e-commerce | VIEWER |
+| **Chayma SAMAALI** | `Chayma.SAMAALI@esprit.tn` | Qualité des fiches produits | VIEWER |
+
+---
+
+## 🚀 Démarrage rapide (Docker)
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
-| Service  | URL                              |
-|----------|----------------------------------|
-| Frontend | http://localhost:8080            |
-| API      | http://localhost:4000/api/health |
-| Postgres | interne (`db:5432`), volume `pgdata` |
-
-Au démarrage, le conteneur `server` attend PostgreSQL (`wait-for-it.sh`), applique les migrations Prisma (`migrate deploy`) puis lance le seed (idempotent).
-
-### Accès par défaut
-
-| Rôle  | Email                  | Mot de passe |
-|-------|------------------------|--------------|
-| ADMIN | `admin@efashion.local` | `Admin123!`  |
-
-Les comptes créés via **S'inscrire** ont le rôle **VIEWER** (lecture seule).
-Changez `JWT_SECRET` et `ADMIN_PASSWORD` en production : `cp .env.example .env`.
-
-## 🔗 Ajouter un rapport Power BI
-
-Dans **Espace Admin**, collez **indifféremment** :
-
-1. le lien direct : `https://app.powerbi.com/view?r=eyJrIjoi...`
-2. ou le code complet :
-   `<iframe title="..." width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoi..." frameborder="0" allowFullScreen="true"></iframe>`
-
-Le format est détecté en direct, l'attribut `src` est extrait, l'URL validée (HTTPS + domaine `app.powerbi.com`) et un aperçu s'affiche.
-Côté Angular : [`PowerBiUrlService`](client/src/app/core/powerbi-url.service.ts) + [`SanitizeEmbedUrlPipe`](client/src/app/shared/sanitize-embed-url.pipe.ts) (`DomSanitizer.bypassSecurityTrustResourceUrl` appliqué **uniquement** après validation).
-Côté serveur : [`utils/powerbi.ts`](server/src/utils/powerbi.ts) valide aussi chaque enregistrement.
-
-## 📡 API
-
-| Méthode | Route | Accès |
+| Service | URL | Note |
 |---|---|---|
-| POST | `/api/auth/register` | public |
-| POST | `/api/auth/login` | public |
-| GET | `/api/auth/me` | authentifié |
-| GET | `/api/dashboards` (`?all=true` pour les inactifs, admin) | authentifié |
-| GET | `/api/dashboards/:id` | authentifié |
-| POST | `/api/dashboards/validate-embed` `{ embed }` | authentifié |
-| POST / PUT / DELETE | `/api/dashboards[/:id]` | ADMIN |
+| **Frontend** | [http://localhost:8080](http://localhost:8080) | Nginx reverse proxy + Angular SPA |
+| **API Backend** | [http://localhost:4000/api/health](http://localhost:4000/api/health) | Node.js Express + Prisma |
+| **PostgreSQL** | `localhost:5432` | Base de données (volume `pgdata`) |
 
-## 🛠 Développement local (sans Docker pour le front/back)
+### Identifiants par défaut
+
+- **Admin principal** : `admin@efashion.local` / `Admin123!` (ou `molk.saouabi@esprit.tn` / `Admin123!`)
+- **Membres de l'équipe** : leur adresse `@esprit.tn` avec mot de passe `Admin123!`
+- Les nouveaux comptes créés via **S'inscrire** ont automatiquement le rôle **VIEWER** (lecture seule).
+
+---
+
+## 🗄️ Visualiser la base avec Prisma Studio
+
+Le port `5432` de PostgreSQL est exposé sur l'hôte. Pour ouvrir l'interface visuelle Prisma Studio :
 
 ```bash
-docker compose up db -d
-cd server && npm install && set DATABASE_URL=postgresql://efashion:efashion@localhost:5432/efashion && npx prisma migrate deploy && npx prisma db seed && npm run dev
-cd client && npm install && npm start   # http://localhost:4200 (proxy /api -> :4000)
+# Dans le dossier server/
+cd server
+
+# Sous Windows (PowerShell) :
+$env:DATABASE_URL="postgresql://efashion:efashion@localhost:5432/efashion?schema=public"; npx prisma studio
+
+# Sous Linux / macOS (Bash) :
+DATABASE_URL="postgresql://efashion:efashion@localhost:5432/efashion?schema=public" npx prisma studio
 ```
 
-> Pour le dev local, exposez le port 5432 du service `db` dans `docker-compose.yml` (`ports: ["5432:5432"]`).
+Prisma Studio s'ouvre automatiquement sur **[http://localhost:5555](http://localhost:5555)** pour explorer et éditer les tables `User` et `Dashboard`.
 
-## 📁 Structure
+---
+
+## 🔗 Mise à jour facile des liens Power BI
+
+Depuis l'**Espace Admin** (`/admin`), vous pouvez à tout moment renseigner ou modifier le lien d'un membre (Abir, Manel, Chayma) :
+
+1. Cliquez sur l'icône **Modifier** (crayon) du dashboard concerné.
+2. Collez au choix :
+   - Le lien direct : `https://app.powerbi.com/reportEmbed?reportId=...&autoAuth=true&ctid=...` ou `https://app.powerbi.com/view?r=...`
+   - Le code HTML complet d'intégration : `<iframe ... src="https://app.powerbi.com/..." ...></iframe>`
+3. Le système détecte le format, extrait l'attribut `src`, valide le domaine et le protocole HTTPS, et affiche un aperçu en direct.
+4. Cliquez sur **Enregistrer** : la base de données PostgreSQL est immédiatement mise à jour.
+
+> **Rapports avec placeholder** : tant qu'un rapport n'a pas son lien définitif, il affiche un badge ambré **« En attente de lien »** sur la page d'accueil et un écran guidé convivial dans la visionneuse.
+
+---
+
+## 🛡️ Sécurité de l'intégration iframe
+
+L'iframe des dashboards Power BI est sécurisé avec les attributs recommandés :
+- `allowFullScreen="true"`
+- `sandbox="allow-scripts allow-same-origin allow-popups allow-forms"`
+- `referrerpolicy="no-referrer-when-downgrade"`
+- Détection SSO automatique : si le lien contient `autoAuth=true`, un bandeau informatif rappelle à l'utilisateur de se connecter à son compte Microsoft institutionnel (`@esprit.tn`).
+
+---
+
+## 📡 Endpoints de l'API
+
+| Méthode | Route | Accès | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Inscription (rôle VIEWER) |
+| `POST` | `/api/auth/login` | Public | Connexion JWT |
+| `GET` | `/api/auth/me` | Authentifié | Profil connecté |
+| `GET` | `/api/dashboards` | Authentifié | Liste des dashboards actifs (`?all=true` pour admin) |
+| `GET` | `/api/dashboards/:id` | Authentifié | Détail d'un dashboard |
+| `POST` | `/api/dashboards/validate-embed` | Authentifié | Analyse et validation d'une URL ou d'un `<iframe>` |
+| `POST` | `/api/dashboards` | ADMIN | Création d'un dashboard |
+| `PUT` | `/api/dashboards/:id` | ADMIN | Modification d'un dashboard |
+| `DELETE` | `/api/dashboards/:id` | ADMIN | Suppression |
+
+---
+
+## 📁 Structure du projet
 
 ```
-client/   Angular (core/, shared/, layout/, pages/{auth,home,viewer,admin}) + Nginx
-server/   Express (src/{config,controllers,services,routes,middlewares,utils}) + prisma/
-docker-compose.yml
+├── docker-compose.yml          # Orchestration multi-conteneurs (db, server, client)
+├── client/                     # Application Angular 19 + Tailwind CSS
+│   ├── src/app/core/           # Services (Auth, Dashboard, PowerBiUrlService), guards & models
+│   ├── src/app/pages/          # Pages (auth, home, viewer, admin)
+│   ├── src/app/shared/         # Pipe sanitizeEmbedUrl, helpers UI
+│   ├── nginx.conf              # Configuration Nginx (SPA HTML5 + proxy /api)
+│   └── Dockerfile              # Multi-stage build Node -> Nginx Alpine
+└── server/                     # API REST Node.js + Express + TypeScript
+    ├── prisma/                 # Schéma PostgreSQL, migrations & seed
+    ├── src/controllers/        # Contrôleurs Express (auth, dashboard)
+    ├── src/services/           # Logique métier
+    ├── src/middlewares/        # Authentification JWT, rôles, validation Zod
+    ├── src/utils/              # Analyseur & validateur d'URL Power BI
+    └── Dockerfile              # Multi-stage build Node -> Runtime Alpine
 ```

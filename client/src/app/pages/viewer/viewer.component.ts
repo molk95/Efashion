@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, effect, inject, input, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DashboardService } from '../../core/dashboard.service';
 import { PowerBiUrlService } from '../../core/powerbi-url.service';
@@ -61,6 +61,20 @@ import { errorMessage } from '../../core/auth.guards';
         }
       </header>
 
+      <!-- Indicateur d'authentification SSO Microsoft pour les rapports sécurisés -->
+      @if (safe() && isAutoAuth()) {
+        <div class="glass flex items-start gap-3 rounded-2xl border border-sky-400/20 bg-sky-500/10 p-4 text-xs text-sky-200 animate-fade-up">
+          <svg class="h-5 w-5 shrink-0 text-sky-400 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+          </svg>
+          <div class="leading-relaxed">
+            <span class="font-semibold text-white">Connexion Microsoft requise (SSO) :</span>
+            Ce rapport est sécurisé via Microsoft Power BI (<code class="rounded bg-sky-950/60 px-1 py-0.5 font-mono text-[11px] text-sky-300">autoAuth=true</code>).
+            Assurez-vous d'être connecté à votre compte organisationnel Microsoft (ex: <span class="font-semibold text-sky-300">&#64;esprit.tn</span>) dans votre navigateur pour que les visuels se chargent correctement.
+          </div>
+        </div>
+      }
+
       <!-- Rapport -->
       <div #frameHost class="relative flex-1 min-h-[480px] overflow-hidden rounded-3xl border border-white/[0.07] bg-ink-900">
         @if (safe()) {
@@ -81,19 +95,47 @@ import { errorMessage } from '../../core/auth.guards';
               </div>
             </div>
           }
-          <iframe [src]="d.embedUrl | sanitizeEmbedUrl" [title]="d.title" (load)="loaded.set(true)"
-                  class="absolute inset-0 h-full w-full border-0" allowfullscreen="true"
-                  allow="fullscreen" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <iframe [src]="d.embedUrl | sanitizeEmbedUrl"
+                  [title]="d.title"
+                  (load)="loaded.set(true)"
+                  class="absolute inset-0 h-full w-full border-0"
+                  allowfullscreen="true"
+                  allowFullScreen="true"
+                  allow="fullscreen"
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                  referrerpolicy="no-referrer-when-downgrade"></iframe>
         } @else {
           <div class="absolute inset-0 grid place-items-center p-6 text-center">
-            <div class="max-w-sm">
-              <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white/5">
-                <svg class="h-7 w-7 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>
+            <div class="max-w-md animate-fade-up">
+              <div class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
               </div>
-              <h2 class="mt-4 font-display text-lg font-semibold text-white">Rapport non encore publié</h2>
-              <p class="mt-1 text-sm text-slate-400">{{ pbi.parse(d.embedUrl).error }}</p>
+              <h2 class="mt-4 font-display text-xl font-bold text-white">
+                {{ isPlaceholder() ? 'Lien en attente de publication' : 'Rapport non encore publié' }}
+              </h2>
+              <p class="mt-2 text-sm leading-relaxed text-slate-400">
+                @if (isPlaceholder()) {
+                  Le dashboard de <span class="font-medium text-slate-200">{{ d.authorName }}</span> n'a pas encore reçu son URL d'intégration Power BI active.
+                } @else {
+                  {{ pbi.parse(d.embedUrl).error || 'Lien Power BI manquant ou invalide.' }}
+                }
+              </p>
               @if (auth.isAdmin()) {
-                <a routerLink="/admin" [queryParams]="{ edit: d.id }" class="btn-primary mt-5">Ajouter le lien Power BI</a>
+                <div class="mt-6 flex flex-wrap justify-center gap-3">
+                  <a routerLink="/admin" [queryParams]="{ edit: d.id }" class="btn-primary">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M12 20h9M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4z"/>
+                    </svg>
+                    Renseigner le lien Power BI
+                  </a>
+                  <a routerLink="/" class="btn-ghost">Retour</a>
+                </div>
+              } @else {
+                <p class="mt-4 text-xs text-slate-500">
+                  Contactez l'administrateur ou connectez-vous avec un compte admin pour mettre à jour ce lien.
+                </p>
               }
             </div>
           </div>
@@ -117,6 +159,8 @@ export class ViewerComponent {
   showKpi = signal(true);
   isFullscreen = signal(false);
   safe = signal(false);
+  isAutoAuth = computed(() => this.pbi.isAutoAuth(this.dashboard()?.embedUrl));
+  isPlaceholder = computed(() => this.pbi.isPlaceholder(this.dashboard()?.embedUrl));
   frameHost = viewChild<ElementRef<HTMLElement>>('frameHost');
 
   constructor() {
@@ -128,7 +172,7 @@ export class ViewerComponent {
       this.ds.get(id).subscribe({
         next: (d) => {
           this.dashboard.set(d);
-          this.safe.set(this.pbi.parse(d.embedUrl).valid);
+          this.safe.set(this.pbi.isReady(d.embedUrl));
         },
         error: (e) => this.error.set(errorMessage(e, 'Dashboard introuvable.')),
       });

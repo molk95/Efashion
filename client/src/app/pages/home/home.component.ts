@@ -41,8 +41,10 @@ import { categoryStyle, initials } from '../../shared/ui';
           <div class="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-brand-500/10 blur-2xl transition group-hover:bg-brand-500/25"></div>
           <div class="flex items-center justify-between">
             <span class="chip" [class]="style(d.category).chip">{{ d.category }}</span>
-            @if (pbi.parse(d.embedUrl).valid) {
+            @if (pbi.isReady(d.embedUrl)) {
               <span class="chip bg-emerald-500/10 text-emerald-300"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>En ligne</span>
+            } @else if (pbi.isPlaceholder(d.embedUrl)) {
+              <span class="chip bg-amber-500/10 text-amber-300 border border-amber-500/20"><span class="h-1.5 w-1.5 rounded-full bg-amber-400"></span>En attente de lien</span>
             } @else {
               <span class="chip bg-white/5 text-slate-400">À configurer</span>
             }

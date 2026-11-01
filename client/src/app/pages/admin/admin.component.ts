@@ -57,8 +57,8 @@ const EMPTY: DashboardInput = {
               <div class="mt-0.5 flex items-center gap-2 text-xs text-slate-400">
                 <span class="chip" [class]="style(d.category).chip">{{ d.category }}</span>
                 {{ d.authorName }}
-                <span class="h-1.5 w-1.5 rounded-full" [class]="pbi.parse(d.embedUrl).valid ? 'bg-emerald-400' : 'bg-slate-600'"
-                      [title]="pbi.parse(d.embedUrl).valid ? 'Lien valide' : 'Lien manquant'"></span>
+                <span class="h-1.5 w-1.5 rounded-full" [class]="pbi.isReady(d.embedUrl) ? 'bg-emerald-400' : pbi.isPlaceholder(d.embedUrl) ? 'bg-amber-400' : 'bg-slate-600'"
+                      [title]="pbi.isReady(d.embedUrl) ? 'Lien actif' : pbi.isPlaceholder(d.embedUrl) ? 'En attente de lien (placeholder)' : 'Lien manquant'"></span>
               </div>
             </div>
             <div class="flex gap-1 opacity-70 group-hover:opacity-100">
@@ -149,12 +149,20 @@ const EMPTY: DashboardInput = {
             </div>
           </div>
 
-          @if (parsed().valid) {
+          @if (pbi.isReady(model.embedUrl)) {
             <div>
-              <div class="label">Aperçu</div>
+              <div class="label">Aperçu en direct</div>
               <div class="relative aspect-video overflow-hidden rounded-2xl border border-white/10 bg-ink-900">
-                <iframe [src]="model.embedUrl | sanitizeEmbedUrl" title="Aperçu" class="absolute inset-0 h-full w-full border-0" allowfullscreen="true"></iframe>
+                <iframe [src]="model.embedUrl | sanitizeEmbedUrl" title="Aperçu" class="absolute inset-0 h-full w-full border-0"
+                        allowfullscreen="true"
+                        allowFullScreen="true"
+                        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
               </div>
+            </div>
+          } @else if (pbi.isPlaceholder(model.embedUrl) && model.embedUrl.trim()) {
+            <div class="rounded-2xl border border-amber-400/20 bg-amber-500/10 p-4 text-xs text-amber-200">
+              <span class="font-semibold text-white">Lien temporaire / Placeholder détecté :</span>
+              Ce dashboard est en attente du lien réel Power BI publié par l'auteur·e. Vous pouvez coller ici le lien définitif ou le tag &lt;iframe&gt; dès qu'il est disponible.
             </div>
           }
 

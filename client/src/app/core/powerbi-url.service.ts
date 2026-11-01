@@ -64,8 +64,26 @@ export class PowerBiUrlService {
     return { inputType, url: u.toString(), valid: true };
   }
 
+  /** Indique si le lien est un placeholder d'attente (ou vide). */
+  isPlaceholder(raw: string | null | undefined): boolean {
+    const input = (raw ?? '').trim().toLowerCase();
+    return !input || input.includes('placeholder=');
+  }
+
+  /** Indique si le rapport est réellement prêt et accessible. */
+  isReady(raw: string | null | undefined): boolean {
+    return this.parse(raw).valid && !this.isPlaceholder(raw);
+  }
+
+  /** Indique si le rapport requiert une connexion SSO Microsoft (autoAuth=true ou reportEmbed). */
+  isAutoAuth(raw: string | null | undefined): boolean {
+    const { url } = this.extract(raw);
+    return /reportembed/i.test(url) || /autoauth=true/i.test(url);
+  }
+
   /** URL sécurisée prête pour [src] d'une iframe, ou null si invalide. */
   toSafeUrl(raw: string | null | undefined): SafeResourceUrl | null {
+    if (this.isPlaceholder(raw)) return null;
     const p = this.parse(raw);
     // L'URL est validée (https + domaine Power BI) AVANT le bypass : aucune URL arbitraire n'est approuvée.
     return p.valid && p.url ? this.sanitizer.bypassSecurityTrustResourceUrl(p.url) : null;

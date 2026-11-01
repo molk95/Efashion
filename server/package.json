@@ -8,6 +8,7 @@
     "build": "prisma generate && tsc",
     "start": "node dist/src/index.js",
     "seed": "node dist/prisma/seed.js",
+    "studio": "prisma studio",
     "migrate:dev": "prisma migrate dev"
   },
   "prisma": {
