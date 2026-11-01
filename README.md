@@ -1,6 +1,6 @@
 # eFashion BI — Portail décisionnel collaboratif
 
-Portail web qui centralise les dashboards **Power BI** (« Publier sur le web » et « Intégration sécurisée ReportEmbed ») des 4 décideurs métier du projet eFashion .
+Portail web qui centralise les dashboards **Power BI** des 4 décideurs métier du projet eFashion .
 
 **Stack** : Angular 19 (standalone, signals) + Tailwind CSS · Node.js / Express / TypeScript · Prisma · PostgreSQL 16 · Docker Compose.
 
