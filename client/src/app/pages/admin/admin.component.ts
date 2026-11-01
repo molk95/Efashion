@@ -5,7 +5,7 @@ import { DashboardService } from '../../core/dashboard.service';
 import { PowerBiUrlService } from '../../core/powerbi-url.service';
 import { Dashboard, DashboardInput, EmbedValidation } from '../../core/models';
 import { SanitizeEmbedUrlPipe } from '../../shared/sanitize-embed-url.pipe';
-import { categoryStyle } from '../../shared/ui';
+import { DEFAULT_CATEGORIES, categoryStyle } from '../../shared/ui';
 import { errorMessage } from '../../core/auth.guards';
 
 const EMPTY: DashboardInput = {
@@ -13,7 +13,7 @@ const EMPTY: DashboardInput = {
   authorName: '',
   description: '',
   embedUrl: '',
-  category: 'Catalogue',
+  category: 'Développement des collections',
   displayOrder: 0,
   isActive: true,
 };
@@ -201,7 +201,7 @@ export class AdminComponent implements OnInit {
   model: DashboardInput = { ...EMPTY };
 
   parsed = computed(() => this.pbi.parse(this.embed()));
-  categories = computed(() => [...new Set(['Catalogue', 'Ventes', 'Logistique', ...this.items().map((d) => d.category)])]);
+  categories = computed(() => [...new Set([...DEFAULT_CATEGORIES, ...this.items().map((d) => d.category)])]);
 
   ngOnInit() {
     this.load(() => {
