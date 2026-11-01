@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
  * 4 décideurs métier du projet eFashion (ESPRIT)
  */
 const TEAM_MEMBERS = [
-  { email: 'molk.saouabi@esprit.tn', fullName: 'Molk SAOUABI', role: Role.ADMIN },
+  { email: 'molk.saouabi@esprit.tn', fullName: 'Molk SAOUABI', role: Role.VIEWER },
   { email: 'Abir.ELWEHDI@esprit.tn', fullName: 'Abir EL WEHDI', role: Role.VIEWER },
   { email: 'Manel.ABAKHOUCH@esprit.tn', fullName: 'Manel ABAKHOUCH', role: Role.VIEWER },
   { email: 'Chayma.SAMAALI@esprit.tn', fullName: 'Chayma SAMAALI', role: Role.VIEWER },

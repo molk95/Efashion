@@ -10,7 +10,7 @@ Portail web qui centralise les dashboards **Power BI** (« Publier sur le web »
 
 | Membre | Email ESPRIT | Catégorie métier | Rôle Portail |
 |---|---|---|---|
-| **Molk SAOUABI** | `molk.saouabi@esprit.tn` | Développement des collections | ADMIN |
+| **Molk SAOUABI** | `molk.saouabi@esprit.tn` | Développement des collections | VIEWER |
 | **Abir EL WEHDI** | `Abir.ELWEHDI@esprit.tn` | Merchandising produit | VIEWER |
 | **Manel ABAKHOUCH** | `Manel.ABAKHOUCH@esprit.tn` | Gestion du catalogue e-commerce | VIEWER |
 | **Chayma SAMAALI** | `Chayma.SAMAALI@esprit.tn` | Qualité des fiches produits | VIEWER |
@@ -31,8 +31,8 @@ docker compose up --build -d
 
 ### Identifiants par défaut
 
-- **Admin principal** : `admin@efashion.local` / `Admin123!` (ou `molk.saouabi@esprit.tn` / `Admin123!`)
-- **Membres de l'équipe** : leur adresse `@esprit.tn` avec mot de passe `Admin123!`
+- **Administrateur unique (gestion & configuration)** : `admin@efashion.local` / `Admin123!`
+- **Membres de l'équipe (consultation)** : leur adresse `@esprit.tn` avec mot de passe `Admin123!` (rôle VIEWER)
 - Les nouveaux comptes créés via **S'inscrire** ont automatiquement le rôle **VIEWER** (lecture seule).
 
 ---
