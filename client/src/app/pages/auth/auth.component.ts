@@ -23,13 +23,6 @@ import { errorMessage } from '../../core/auth.guards';
       </div>
 
       <div class="relative space-y-6 animate-fade-up">
-        <div class="inline-flex items-center gap-2 rounded-full bg-brand-100/70 border border-brand-200/80 px-3 py-1 text-xs font-semibold text-brand-800">
-          <svg class="h-3.5 w-3.5 text-brand-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-          Portail décisionnel universitaire
-        </div>
-
         <h2 class="font-display text-5xl font-extrabold leading-tight text-slate-900">
           Le décisionnel<br /><span class="text-gradient">de la mode</span>, réuni.
         </h2>
@@ -38,17 +31,17 @@ import { errorMessage } from '../../core/auth.guards';
           Catalogue, collections, merchandising et fiches produits : vos dashboards Power BI sécurisés dans un portail collaboratif dédié.
         </p>
 
-        <div class="grid grid-cols-3 gap-3 max-w-md">
+        <div class="inline-flex gap-3 max-w-md">
           @for (k of kpis; track k.l) {
-            <div class="glass rounded-2xl p-4 bg-white/80 border border-slate-200 shadow-sm">
-              <div class="font-display text-2xl font-bold text-slate-900">{{ k.v }}</div>
-              <div class="text-xs font-medium text-slate-500 mt-0.5">{{ k.l }}</div>
+            <div class="glass rounded-2xl px-6 py-4 bg-white/80 border border-slate-200 shadow-sm">
+              <div class="font-display text-3xl font-bold text-slate-900">{{ k.v }}</div>
+              <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mt-0.5">{{ k.l }}</div>
             </div>
           }
         </div>
       </div>
 
-      <p class="relative text-xs font-medium text-slate-500">Projet décisionnel eFashion · ESPRIT 2026</p>
+      <p class="relative text-xs font-medium text-slate-500">eFashion · 2026</p>
     </section>
 
     <!-- Formulaire -->
@@ -127,8 +120,6 @@ export class AuthComponent {
   isLogin = this.route.snapshot.data['mode'] !== 'register';
   kpis = [
     { v: '4', l: 'Décideurs' },
-    { v: '100%', l: 'Power BI' },
-    { v: 'SSO', l: 'Sécurisé' },
   ];
   fullName = '';
   email = '';

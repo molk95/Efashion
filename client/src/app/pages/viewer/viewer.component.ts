@@ -98,8 +98,8 @@ import { errorMessage } from '../../core/auth.guards';
           </svg>
           <div class="leading-relaxed">
             <span class="font-bold text-sky-950">Connexion Microsoft requise (SSO) :</span>
-            Ce rapport est sécurisé via Microsoft Power BI (<code class="rounded bg-sky-100 px-1 py-0.5 font-mono text-[11px] text-sky-800">autoAuth=true</code>).
-            Assurez-vous d'être connecté à votre compte organisationnel Microsoft (ex: <span class="font-bold text-sky-800">&#64;esprit.tn</span>) dans votre navigateur pour charger les données.
+            Ce rapport est sécurisé via Microsoft Power BI.
+            Assurez-vous d'être connecté à votre compte organisationnel Microsoft dans votre navigateur pour charger les données.
           </div>
         </div>
       }
